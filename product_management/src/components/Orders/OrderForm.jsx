@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrder, getAllOrder } from "../../reducers/Order/orderAction";
 import { getAllStock } from "../../reducers/Stock/stockAction";
+import { toast } from "sonner";
+import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
 const OrderForm = ({
-  setIsOpen,
+  onClose,
   data = { cutomerName: "", stockId: "", orderQuantity: 0 },
 }) => {
-  const [OrderData, setOrderData] = useState(data);
-  const { orderError } = useSelector((state) => state.OrderReducer);
+  const [orderData, setOrderData] = useState(data);
   const { stocks, getStockLoading, stockError } = useSelector(
     (state) => state.StockReducer
   );
@@ -21,12 +22,15 @@ const OrderForm = ({
   }, []);
 
   const handleAddOrders = () => {
-    console.log(OrderData);
-    let newOrder = OrderData;
+    let newOrder = orderData;
     dispatch(
-      addOrder(newOrder, () => {
-        setIsOpen(false);
-        dispatch(getAllOrder());
+      addOrder(newOrder, (error) => {
+        if (error) {
+          toast.error(error);
+        } else {
+          dispatch(getAllOrder());
+          onClose();
+        }
       })
     );
   };
@@ -34,28 +38,28 @@ const OrderForm = ({
   return (
     <div>
       <div>
-        <label htmlFor="cName">Customer Name</label>
-        <input
-          type="text"
-          name="cutomerName"
-          id="cutomerName"
-          value={OrderData.cutomerName}
+        <TextField
+          // error={`${stockError}`.includes("exist") && true}
+          id="outlined-error"
+          label="Customer Name"
+          value={orderData.cutomerName}
           onChange={(e) =>
-            setOrderData({ ...OrderData, cutomerName: e.target.value })
+            setOrderData({ ...orderData, cutomerName: e.target.value })
           }
+          sx={{ marginBottom: "20px" }}
         />
       </div>
       <div>
-        <label htmlFor="stockId">Stock</label>
         {stockError ? (
           stockError
         ) : getStockLoading ? (
           "Loading.."
         ) : (
-          <select
-            value={OrderData.stockId}
+          <>
+            {/* <select
+            value={orderData.stockId}
             onChange={(e) =>
-              setOrderData({ ...OrderData, stockId: e.target.value })
+              setOrderData({ ...orderData, stockId: e.target.value })
             }
           >
             {stocks?.map((stock, index) => {
@@ -65,25 +69,50 @@ const OrderForm = ({
                 </option>
               );
             })}
-          </select>
+          </select> */}
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={orderData.stockId}
+              label="Stock"
+              onChange={(e) =>
+                setOrderData({ ...orderData, stockId: e.target.value })
+              }
+              sx={{ marginBottom: "20px", width: "120px" }}
+            >
+              {stocks?.map((stock, index) => {
+                return (
+                  <MenuItem key={stock.id} value={stock.id}>
+                    {stock.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </>
         )}
       </div>
       <div>
-        <label htmlFor="orderQuantity">Order Quantity</label>
-        <input
-          type="number"
-          name="orderQuantity"
-          id="orderQuantity"
-          value={OrderData.orderQuantity}
+        <TextField
+          // error={`${stockError}`.includes("exist") && true}
+          id="outlined-error"
+          label="Order Quantity"
+          value={orderData.orderQuantity}
           onChange={(e) =>
-            setOrderData({ ...OrderData, orderQuantity: e.target.value })
+            setOrderData({ ...orderData, orderQuantity: e.target.value })
           }
+          sx={{ marginBottom: "20px" }}
         />
       </div>
-      <button onClick={() => handleAddOrders()}>Add Order</button>
-      <button type="submit">Submit</button>
-
-      {orderError && <p>{orderError}</p>}
+      <Button
+        variant="outlined"
+        onClick={() => handleAddOrders()}
+        sx={{ mr: 2 }}
+      >
+        Add Order
+      </Button>
+      <Button variant="outlined" color="inherit" onClick={() => onClose()}>
+        Cancel
+      </Button>
     </div>
   );
 };

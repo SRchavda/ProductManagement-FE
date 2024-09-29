@@ -1,10 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Modal from "../Modal";
-import { deleteOrder } from "../../reducers/Order/orderService";
 import { getAllOrder } from "../../reducers/Order/orderAction";
-import OrderForm from "./OrderForm";
-import { toast } from "sonner";
+import { Box } from "@mui/material";
+import CustomTable from "../CustomeTable";
+
+const headCells = [
+  {
+    id: "customerName",
+    numeric: false,
+    disablePadding: true,
+    label: "Customer Name",
+  },
+  {
+    id: "stockId",
+    numeric: true,
+    disablePadding: false,
+    label: "Stock Name",
+  },
+  {
+    id: "orderQuantity",
+    numeric: true,
+    disablePadding: false,
+    label: "Order Qty",
+  },
+  {
+    id: "action",
+    numeric: true,
+    disablePadding: false,
+    label: "Action",
+  },
+];
+
+const rowSettings = [
+  { isNest: false, prop: "cutomerName" },
+  { isNest: true, per: "stock", prop: "name" },
+  { isNest: false, prop: "orderQuantity" },
+  { isButton: true },
+];
 
 const OrdersTable = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,49 +62,17 @@ const OrdersTable = () => {
     setIsOpen(true);
   };
 
-  const handleDelete = (id) => {
-    dispatch(
-      deleteOrder(id, (error) => {
-        dispatch(getAllOrder());
-        toast.error(error);
-      })
-    );
-  };
-
   return (
     <>
-      {getOrderLoading ? (
-        <p>Loading....</p>
-      ) : (
-        <div>
-          <h3>Orders Table</h3>
-          <hr></hr>
-        </div>
-      )}
-      <div>
-        {isOpen && (
-          <Modal>
-            <OrderForm
-              setIsOpen={(o) => setIsOpen(o)}
-              data={modalData}
-              isUpdate={true}
-            />
-          </Modal>
-        )}
-        {orders?.map((order, index) => {
-          return (
-            <div key={index}>
-              <h2>{index}</h2>
-              <div>Customer Name : {order.cutomerName}</div>
-              <div>Stock : {order.stock.name}</div>
-              <div>Order Quantity : {order.orderQuantity}</div>
-              <button onClick={() => handleEdit(order)}>Edit</button>
-              <button onClick={() => handleDelete(order.id)}>Delete</button>
-              <hr></hr>
-            </div>
-          );
-        })}
-      </div>
+      <Box sx={{ width: "100%" }}>
+        <CustomTable
+          headCells={headCells}
+          data={orders}
+          rowSettings={rowSettings}
+          isLoading={getOrderLoading}
+          handleEdit={handleEdit}
+        />
+      </Box>
     </>
   );
 };

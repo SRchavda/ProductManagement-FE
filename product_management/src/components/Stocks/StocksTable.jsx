@@ -1,11 +1,49 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
+import Box from "@mui/material/Box";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import { deleteStock, getAllStock } from "../../reducers/Stock/stockAction";
-import StockForm from "./StockForm";
 import { toast } from "sonner";
-import CModal from "../Modal";
+import CustomTable from "../CustomeTable";
+import CModal from "../CustomModal";
+import StockForm from "./StockForm";
 
-export const StocksTable = () => {
+const headCells = [
+  {
+    id: "stockName",
+    numeric: false,
+    disablePadding: true,
+    label: "Stock Name",
+  },
+  {
+    id: "stockQty",
+    numeric: true,
+    disablePadding: false,
+    label: "Stock Qty",
+  },
+  {
+    id: "orderQty",
+    numeric: true,
+    disablePadding: false,
+    label: "Order Qty",
+  },
+  {
+    id: "action",
+    numeric: true,
+    disablePadding: false,
+    label: "Action",
+  },
+];
+
+const rowSettings = [
+  { isNest: false, prop: "name" },
+  { isNest: false, prop: "quantity" },
+  { isNest: false, prop: "orderQuantity" },
+  { isButton: true },
+];
+
+export default function StocksTable() {
   const [isOpen, setIsOpen] = useState(false);
   const [modalData, setModalData] = useState({ name: "", quantity: 0 });
 
@@ -19,57 +57,50 @@ export const StocksTable = () => {
     dispatch(getAllStock());
   }, []);
 
-  const handleEdit = (id, name, quantity) => {
-    setModalData({ name, quantity, id });
+  const handleEdit = (item) => {
+    setModalData(item);
     setIsOpen(true);
   };
 
   const handleDelete = (id) => {
     dispatch(
       deleteStock(id, (error) => {
-        dispatch(getAllStock());
-        toast.error(error);
+        if (error) {
+          toast.error(error);
+        } else {
+          dispatch(getAllStock());
+        }
       })
     );
   };
 
   return (
     <>
-      {getStockLoading ? (
-        <p>Loading....</p>
-      ) : (
-        <div>
-          <h3>Stocks Table</h3>
-          <hr></hr>
-        </div>
+      {isOpen && (
+        <CModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          btitle={"Edit Stock"}
+        >
+          <StockForm
+            isUpdate={true}
+            onClose={() => {
+              setIsOpen(false);
+            }}
+            data={modalData}
+          />
+        </CModal>
       )}
-      <div>
-        {isOpen && (
-          <CModal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-            <StockForm
-              setIsOpen={(o) => setIsOpen(o)}
-              data={modalData}
-              isUpdate={true}
-            />
-          </CModal>
-        )}
-        {stocks?.map((stock, index) => {
-          return (
-            <div key={index}>
-              <h2>{index}</h2>
-              <div>Stock Name : {stock.name}</div>
-              <div>Quantity : {stock.quantity}</div>
-              <button
-                onClick={() => handleEdit(stock.id, stock.name, stock.quantity)}
-              >
-                Edit
-              </button>
-              <button onClick={() => handleDelete(stock.id)}>Delete</button>
-              <hr></hr>
-            </div>
-          );
-        })}
-      </div>
+      <Box sx={{ width: "100%" }}>
+        <CustomTable
+          headCells={headCells}
+          rowSettings={rowSettings}
+          data={stocks}
+          isLoading={getStockLoading}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      </Box>
     </>
   );
-};
+}

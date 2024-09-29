@@ -87,6 +87,7 @@ export const addStock = (newStock, callback) => {
         dispatch(
           fetchFailure(ADD_STOCK_FAILURE, error?.response?.data?.errorMsg)
         );
+        callback && callback(error?.response?.data?.errorMsg);
       }
     );
   };

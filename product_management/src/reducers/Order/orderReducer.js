@@ -90,7 +90,6 @@ const OrderReducer = (state = initialState, action) => {
       return {
         ...state,
         addOrderLoading: false,
-        orders: [],
         orderError: action.payload,
       };
 

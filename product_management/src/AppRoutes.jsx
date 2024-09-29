@@ -7,12 +7,14 @@ import {
 } from "react-router-dom";
 import Stock from "./components/Stocks/Stock";
 import Order from "./components/Orders/Order";
+import SideBar from "./components/SideBar";
+import { Box } from "@mui/material";
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <LayoutComponent />,
+      element: <MainLayout />,
       children: [
         {
           index: true,
@@ -34,20 +36,22 @@ const AppRoutes = () => {
   );
 };
 
-const LayoutComponent = () => {
+const MainLayout = () => {
   return (
-    <div>
-      <div>
-        <h1>Stock Management</h1>
-        <hr></hr>
-        <div>
-          <Link to={"stocks"}>Stocks</Link>
-          <Link to={"orders"}>Orders</Link>
-        </div>
-        <hr></hr>
+    <Box
+      sx={{
+        width: "100%",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+      }}
+    >
+      <SideBar />
+      <Box sx={{ width: "100%" }}>
         <Outlet />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

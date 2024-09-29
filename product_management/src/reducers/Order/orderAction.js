@@ -44,7 +44,7 @@ export const getOrderById = (id, callback) => {
         dispatch(
           fetchFailure(GET_ORDER_ID_FAILURE, error?.response?.data?.errorMsg)
         );
-        callback && callback();
+        callback && callback(error?.response?.data?.errorMsg);
       }
     );
   };
@@ -62,7 +62,7 @@ export const addOrder = (newStock, callback) => {
         dispatch(
           fetchFailure(ADD_ORDER_FAILURE, error?.response?.data?.errorMsg)
         );
-        callback && callback();
+        callback && callback(error?.response?.data?.errorMsg);
       }
     );
   };
@@ -80,7 +80,7 @@ export const deleteOrder = (id, callback) => {
         dispatch(
           fetchFailure(DELETE_ORDER_FAILURE, error?.response?.data?.errorMsg)
         );
-        callback && callback();
+        callback && callback(error?.response?.data?.errorMsg);
       }
     );
   };

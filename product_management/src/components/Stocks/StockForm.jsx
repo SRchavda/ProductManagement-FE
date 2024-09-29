@@ -5,18 +5,14 @@ import {
   getAllStock,
   updateStock,
 } from "../../reducers/Stock/stockAction";
+import { toast } from "sonner";
+import { Button, TextField } from "@mui/material";
 
-const StockForm = ({
-  setIsOpen,
-  data = { name: "", quantity: 0 },
-  isUpdate,
-}) => {
+const StockForm = ({ data = { name: "", quantity: 1 }, isUpdate, onClose }) => {
   const [stockData, setStockData] = useState(data);
   const { stockError } = useSelector((state) => state.StockReducer);
 
   const dispatch = useDispatch();
-
-  console.log(stockError);
 
   const handleAddEditStock = () => {
     let newStock = stockData;
@@ -26,15 +22,23 @@ const StockForm = ({
     }
     isUpdate
       ? dispatch(
-          updateStock(newStock, () => {
-            setIsOpen(false);
-            dispatch(getAllStock());
+          updateStock(newStock, (error) => {
+            if (error) {
+              toast.error(error);
+            } else {
+              dispatch(getAllStock());
+              onClose();
+            }
           })
         )
       : dispatch(
-          addStock(newStock, () => {
-            setIsOpen(false);
-            dispatch(getAllStock());
+          addStock(newStock, (error) => {
+            if (error) {
+              toast.error(error);
+            } else {
+              dispatch(getAllStock());
+              onClose();
+            }
           })
         );
   };
@@ -42,32 +46,37 @@ const StockForm = ({
   return (
     <div>
       <div>
-        <label htmlFor="stockName">Stock Name</label>
-        <input
-          type="text"
-          name="stockName"
-          id="stockName"
+        <TextField
+          // error={`${stockError}`.includes("exist") && true}
+          id="outlined-error"
+          label="Stock Name"
           value={stockData.name}
           onChange={(e) => setStockData({ ...stockData, name: e.target.value })}
+          sx={{ marginBottom: "20px" }}
         />
       </div>
       <div>
-        <label>Stock Quantity</label>
-        <input
-          type="number"
-          name="stockQuantity"
-          id="stockQuantity"
+        <TextField
+          // error={`${stockError}`.includes("negative") && true}
+          id="outlined-error"
+          label="Stock Quantity"
           value={stockData.quantity}
           onChange={(e) =>
             setStockData({ ...stockData, quantity: e.target.value })
           }
+          sx={{ marginBottom: "20px" }}
         />
       </div>
-      <button onClick={() => handleAddEditStock()}>
+      <Button
+        variant="outlined"
+        onClick={() => handleAddEditStock()}
+        sx={{ mr: 2 }}
+      >
         {isUpdate ? "Edit" : "Add"} Stock
-      </button>
-
-      {stockError && <p>{stockError}</p>}
+      </Button>
+      <Button variant="outlined" color="inherit" onClick={() => onClose()}>
+        Cancel
+      </Button>
     </div>
   );
 };
