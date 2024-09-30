@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrder } from "../../reducers/Order/orderAction";
+import { deleteOrderById, getAllOrder } from "../../reducers/Order/orderAction";
 import { Box } from "@mui/material";
 import CustomTable from "../CustomeTable";
+import CModal from "../CustomModal";
+import OrderForm from "../Orders/OrderForm";
+import { deleteOrder } from "../../reducers/Order/orderService";
+import { toast } from "sonner";
 
 const headCells = [
   {
@@ -56,10 +60,22 @@ const OrdersTable = () => {
     dispatch(getAllOrder());
   }, []);
 
-  const handleEdit = (order) => {
-    const { cutomerName, orderQuantity, id, stockId } = order;
-    setModalData({ cutomerName, orderQuantity, id, stockId });
-    setIsOpen(true);
+  // const handleDelete = (order) => {
+  //   const { cutomerName, orderQuantity, id, stockId } = order;
+  //   setModalData({ cutomerName, orderQuantity, id, stockId });
+  //   setIsOpen(true);
+  // };
+
+  const handleDelete = (id) => {
+    dispatch(
+      deleteOrderById(id, (error) => {
+        if (error) {
+          toast.error(error);
+        } else {
+          dispatch(getAllOrder());
+        }
+      })
+    );
   };
 
   return (
@@ -70,7 +86,7 @@ const OrdersTable = () => {
           data={orders}
           rowSettings={rowSettings}
           isLoading={getOrderLoading}
-          handleEdit={handleEdit}
+          handleDelete={handleDelete}
         />
       </Box>
     </>

@@ -13,7 +13,12 @@ import {
   GET_ORDER_ID_SUCCESS,
 } from "../actionTypes";
 import { fetchFailure, fetchRequest, fetchSuccess } from "../Stock/stockAction";
-import { AddOrder, GetAllOrder, GetOrderByID } from "./orderService";
+import {
+  AddOrder,
+  deleteOrder,
+  GetAllOrder,
+  GetOrderByID,
+} from "./orderService";
 
 export const getAllOrder = (callback) => {
   return (dispatch) => {
@@ -59,16 +64,20 @@ export const addOrder = (newStock, callback) => {
         callback && callback();
       },
       (error) => {
+        console.log(error?.response?.data?.errors?.OrderQuantity[0]);
         dispatch(
-          fetchFailure(ADD_ORDER_FAILURE, error?.response?.data?.errorMsg)
+          fetchFailure(
+            ADD_ORDER_FAILURE,
+            error?.response?.data?.errors?.OrderQuantity[0]
+          )
         );
-        callback && callback(error?.response?.data?.errorMsg);
+        callback && callback(error?.response?.data?.errors?.OrderQuantity[0]);
       }
     );
   };
 };
 
-export const deleteOrder = (id, callback) => {
+export const deleteOrderById = (id, callback) => {
   return (dispatch) => {
     dispatch(fetchRequest(DELETE_ORDER_REQUEST));
     deleteOrder(id).then(
@@ -77,6 +86,7 @@ export const deleteOrder = (id, callback) => {
         callback && callback();
       },
       (error) => {
+        console.log(error?.response?.data?.errorMsg);
         dispatch(
           fetchFailure(DELETE_ORDER_FAILURE, error?.response?.data?.errorMsg)
         );

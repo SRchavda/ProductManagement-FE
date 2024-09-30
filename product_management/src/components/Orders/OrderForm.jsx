@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addOrder, getAllOrder } from "../../reducers/Order/orderAction";
 import { getAllStock } from "../../reducers/Stock/stockAction";
 import { toast } from "sonner";
-import { Button, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Button, MenuItem, Select, TextField } from "@mui/material";
 
 const OrderForm = ({
   onClose,
@@ -56,20 +56,6 @@ const OrderForm = ({
           "Loading.."
         ) : (
           <>
-            {/* <select
-            value={orderData.stockId}
-            onChange={(e) =>
-              setOrderData({ ...orderData, stockId: e.target.value })
-            }
-          >
-            {stocks?.map((stock, index) => {
-              return (
-                <option key={stock.id} value={stock.id}>
-                  {stock.name}
-                </option>
-              );
-            })}
-          </select> */}
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"

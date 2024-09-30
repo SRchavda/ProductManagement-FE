@@ -85,15 +85,17 @@ export default function CustomTable({
                               </TableCell>
                             ) : (
                               <TableCell align="right">
-                                <Button
-                                  variant="outlined"
-                                  size="small"
-                                  color="primary"
-                                  sx={{ marginRight: "5px" }}
-                                  onClick={() => handleEdit(item)}
-                                >
-                                  Edit
-                                </Button>
+                                {handleEdit && (
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    color="primary"
+                                    sx={{ marginRight: "5px" }}
+                                    onClick={() => handleEdit(item)}
+                                  >
+                                    Edit
+                                  </Button>
+                                )}
                                 {handleDelete && (
                                   <Button
                                     variant="outlined"
